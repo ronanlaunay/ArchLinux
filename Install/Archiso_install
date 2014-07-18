@@ -15,14 +15,14 @@ loadkeys fr-pc
 #
 echo -e "n\np\n\n\n+512M\nn\ne\n\n\n\nn\nl\n\n+2G\nt\n5\n82\nn\nl\n\n+10G\nn\nl\n\n\nw\n" | fdisk /dev/sda
 #
-## On formate les partition au format qui convient le mieux 
+## On formate les partitions au format qui convient le mieux 
 #
 mkfs.ext2 /dev/sda1
 mkfs.ext4 /dev/sda6
 mkfs.ext4 /dev/sda7
 mkswap /dev/sda5
 #
-## On monte les partition sur des points de montage que l’on créer au préalable 
+## On monte les partitions sur des points de montage que l’on créer au préalable 
 #
 mount /dev/sda6 /mnt
 mkdir /mnt/{boot,home}
