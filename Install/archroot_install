@@ -1,0 +1,20 @@
+#!/usr/bin/zsh
+echo 'ArchRonan' >> /etc/hostname
+#
+## suppression # devant LANG=" fr_FR.UTF8 dans /etc/locale.gen
+sed -i -e "s/#LANG=\"fr\_FR\.UTF8\"/LANG=fr\_FR\.UTF8/g" /etc/locale.gen
+#
+locale-gen
+echo 'LANG="fr_FR.UTF8"' >> /etc/locale.conf
+export LANG="fr_FR.UTF8"
+#
+##sed suppression # devant KEYMAP="fr-pc" dans /etc/vconsole.conf
+touch /etc/vconsole.conf
+echo ‘KEYMAP="fr-pc"' >> /etc/vconsole.conf
+#
+ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
+mkinitpio -p linux
+grub-install --no-floppy --recheck /dev/sda
+grub-mkconfig -o /boot/grub/grub.cfg
+echo -e "P@ssw0rd\nP@ssw0rd\n" | passwd
+exit
