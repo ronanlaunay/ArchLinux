@@ -1,0 +1,49 @@
+#!/usr/bin/zsh
+#
+## On charge la bonne configuration du clavier (ici fr-pc) 
+#
+loadkeys fr-pc
+#
+#####      On créer une table des partition selon ce schéma :      ######
+#Device    Boot     Start       End   Blocks  Id System                #
+#/dev/sda1           2048   1050623   524288  83 Linux                 #
+#/dev/sda2        1050624  41943039 20446208   5 Extended              #
+#/dev/sda5        1052672   5246975  2097152  82 Linux swap / Solaris  #
+#/dev/sda6        5249024  26220543 10485760  83 Linux                 #
+#/dev/sda7       26222592  41943039  7860224  83 Linux                 #
+########################################################################
+#
+echo -e "n\np\n\n\n+512M\nn\ne\n\n\n\nn\nl\n\n+2G\nt\n5\n82\nn\nl\n\n+10G\nn\nl\n\n\nw\n" | fdisk /dev/sda
+#
+## On formate les partition au format qui convient le mieux 
+#
+mkfs.ext2 /dev/sda1
+mkfs.ext4 /dev/sda6
+mkfs.ext4 /dev/sda7
+mkswap /dev/sda5
+#
+## On monte les partition sur des points de montage que l’on créer au préalable 
+#
+mount /dev/sda6 /mnt
+mkdir /mnt/{boot,home}
+mount /dev/sda1 /mnt/boot
+mount /dev/sda7 /mnt/home
+#
+## On active également le swap 
+#
+swapon /dev/sda5
+#
+## On installe ensuite les paquets de base, puis ce pour le developpement enfin gnome, le bureau et pour finir grub le lanceur de démarrage 
+#
+pacstrap /mnt base
+pacstrap /mnt base base-devel
+pacstrap /mnt base base gnome
+pacstrap /mnt grub
+#
+## On génère ensuite le fichier fstab, correspondant à la séquence de démarrage à jouer après que grub démarre sur la bonne partition 
+#
+genfstab -U -p /mnt >> /mnt/etc/fstab
+#
+## On ‘chroot’ le nouveau système qui vient d’être créé 
+#
+arch-chroot /mnt
